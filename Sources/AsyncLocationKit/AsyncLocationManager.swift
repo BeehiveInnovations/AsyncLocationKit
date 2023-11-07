@@ -48,6 +48,11 @@ public final class AsyncLocationManager {
     }
 
     public init(locationManager: CLLocationManager, desiredAccuracy: LocationAccuracy = .bestAccuracy, allowsBackgroundLocationUpdates: Bool = false) {
+        // Core Location calls the methods of your delegate object using the RunLoop of the thread on which you initialized CLLocationManager.
+        // That thread must itself have an active RunLoop, like the one found in your app’s main thread.
+        // https://forums.swift.org/t/concurrency-update-dependency-delegate-methods-never-called/59592
+        assert(Thread.isMainThread, "Must initialize on the main thread")
+      
         self.locationManager = locationManager
         proxyDelegate = AsyncDelegateProxy()
         locationDelegate = LocationDelegate(delegateProxy: proxyDelegate)
